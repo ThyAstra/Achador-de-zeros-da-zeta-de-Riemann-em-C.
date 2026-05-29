@@ -15,9 +15,9 @@ double zeta(double n){ // converge para t>1, forma base da Zeta de Riemann. //
 } double complex czeta(double reals, double imags){ // converge para Re(s)>0, forma mais importante para computar zeros, visto que todos estão nesta parte do plano complexo //
     double complex s = reals + imags*I;
     double complex soma = 0;
-    for(int i=1;i<=100;i++){
+    for(int i=1;i<=100000;i++){
         soma = cpow(-1, i-1)/cpow(i, s);
-        if(i==50){
+        if(i==100000){
             return ((1/(1-cpow(2,1-s)))*soma);
         }
     }
@@ -33,6 +33,16 @@ int main(){
         printf("Valor:%lf",zeta(n));
         
     }else if(t==2){
+        srand(time(NULL));
+        double reals,imags;
+        double complex z;
+        reals = (double)rand()/(double)RAND_MAX;
+        imags = 100*((double)rand()/(double)RAND_MAX);
+        z =  reals + imags*I;
+        printf("Parte real do input aleatorio: %lf\n",reals);
+        printf("Parte imaginária do input aleatorio: %lfi\n",imags);
+        printf("Valor real da zeta complexa: %lf\n",creal(czeta(reals,imags)));
+        printf("Valor imaginário da zeta complexa %lfi\n",cimag(czeta(reals,imags)));
         
     }else if(t==3){
         
@@ -42,3 +52,4 @@ int main(){
     }
     return 0;
 }
+
