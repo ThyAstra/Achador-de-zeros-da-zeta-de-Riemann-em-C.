@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <complex.h>
+#include <time.h>
+
+double zeta(double n){ // converge para t>1, forma base da Zeta de Riemann. //
+    double soma = 0;
+    for(int i=1;i<=100;i++){
+    soma = soma + 1/pow(i,n);
+    if(i==100){
+        return soma;
+    }
+    }
+} double complex czeta(double reals, double imags){ // converge para Re(s)>0, forma mais importante para computar zeros, visto que todos estão nesta parte do plano complexo //
+    double complex s = reals + imags*I;
+    double complex soma = 0;
+    for(int i=1;i<=100;i++){
+        soma = cpow(-1, i-1)/cpow(i, s);
+        if(i==50){
+            return ((1/(1-cpow(2,1-s)))*soma);
+        }
+    }
+}
+int main(){
+    int t;
+    printf("Escolha qual comportamento da Zeta de Riemann voce quer testar(1 para zeta normal, 2 para zeta com parte real entre 0 e 1, e 3 para zeta com parte real 1/2):");
+    scanf("%d",&t);
+    if(t==1){
+        double n;
+        printf("Escolha o valor da potencia na soma:");
+        scanf("%lf",&n);
+        printf("Valor:%lf",zeta(n));
+        
+    }else if(t==2){
+        
+    }else if(t==3){
+        
+    }else{
+        printf("Invalido.");
+        return 0;
+    }
+    return 0;
+}
