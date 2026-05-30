@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <complex.h>
 #include <time.h>
+#define PI = 3.141592653589793238462
 
 double mod(double complex s){ // função básica para calcular módulo de números complexos. //
     return sqrt(creal(s)*creal(s) + cimag(s)*cimag(s));
@@ -25,7 +26,12 @@ double zeta(double n){ // converge para t>1, forma base da Zeta de Riemann. //
             return ((1/(1-cpow(2,1-s)))*soma);
         }
     }
+} double theta(double t){ // função utilizada para aproximar a função theta de t que aparece na fórmula de Riemann-Siegel. //
+    return 0.5*t*log(t/2PI) - 0.5*t - PI/8 + 1.0/(48*t) + 7.0/(5760.0*t*t*t);
 }
+
+
+
 int main(){
     int t;
     printf("Escolha qual comportamento da Zeta de Riemann voce quer testar(1 para zeta normal, 2 para zeta com parte real entre 0 e 1, e 3 para zeta com parte real 1/2):");
