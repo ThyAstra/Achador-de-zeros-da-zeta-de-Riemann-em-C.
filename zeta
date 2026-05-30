@@ -37,21 +37,8 @@ int main(){
         printf("Valor:%lf",zeta(n));
         
     }else if(t==2){
-        srand(time(NULL));
-        double reals,imags;
-        double complex z;
-        while(1){
-        reals = (double)rand()/(double)RAND_MAX;
-        imags = 14.134725;
-        z =  reals + imags*I;
-        if(-0.001<mod(z)<0.001){
-            printf("Zero encontrado.\n");
-            printf("Parte real do input:%lf\n",creal(z));
-            printf("Parte imaginaria do output:%lfi\n",cimag(z));
-            printf("Parte real de zeta:%lf\n",creal(czeta(reals,imags)));
-            printf("Parte imaginaria de zeta:%lfi\n",cimag(czeta(reals,imags)));
-            break;
-        }}
+        
+    }
         
     }else if(t==3){
         
