@@ -4,6 +4,10 @@
 #include <complex.h>
 #include <time.h>
 
+double mod(double complex s){ // função básica para calcular módulo de números complexos. //
+    return sqrt(creal(s)*creal(s) + cimag(s)*cimag(s));
+}
+
 double zeta(double n){ // converge para t>1, forma base da Zeta de Riemann. //
     double soma = 0;
     for(int i=1;i<=100;i++){
@@ -12,7 +16,7 @@ double zeta(double n){ // converge para t>1, forma base da Zeta de Riemann. //
         return soma;
     }
     }
-} double complex czeta(double reals, double imags){ // converge para Re(s)>0, forma mais importante para computar zeros, visto que todos estão nesta parte do plano complexo //
+} double complex czeta(double reals, double imags){ // converge para Re(s)>0, forma mais básica para computar a função continuada analíticamente, embora demore para convergir para partes reais pequenas, não sendo muito útil para achar zeros aleatoriamente. //
     double complex s = reals + imags*I;
     double complex soma = 0;
     for(int i=1;i<=100000;i++){
@@ -36,13 +40,18 @@ int main(){
         srand(time(NULL));
         double reals,imags;
         double complex z;
+        while(1){
         reals = (double)rand()/(double)RAND_MAX;
-        imags = 100*((double)rand()/(double)RAND_MAX);
+        imags = 14.134725;
         z =  reals + imags*I;
-        printf("Parte real do input aleatorio: %lf\n",reals);
-        printf("Parte imaginária do input aleatorio: %lfi\n",imags);
-        printf("Valor real da zeta complexa: %lf\n",creal(czeta(reals,imags)));
-        printf("Valor imaginário da zeta complexa %lfi\n",cimag(czeta(reals,imags)));
+        if(-0.001<mod(z)<0.001){
+            printf("Zero encontrado.\n");
+            printf("Parte real do input:%lf\n",creal(z));
+            printf("Parte imaginaria do output:%lfi\n",cimag(z));
+            printf("Parte real de zeta:%lf\n",creal(czeta(reals,imags)));
+            printf("Parte imaginaria de zeta:%lfi\n",cimag(czeta(reals,imags)));
+            break;
+        }}
         
     }else if(t==3){
         
@@ -52,4 +61,3 @@ int main(){
     }
     return 0;
 }
-
