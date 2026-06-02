@@ -59,10 +59,24 @@ int main(){
     }else if(a==2){
         
     }else if(a==3){
+    double v[10];    
     double t;
-    scanf("%lf",&t);
-    printf("%lf",creal(critzeta(t)));
-    printf("%lfi",cimag(critzeta(t)));
+    double erro = 0.01;
+    srand(time(NULL));
+    for(int i = 0;i<10;i++){  
+    t = 1000*(double)rand()/RAND_MAX;
+    v[i]=t;
+    }for(int i = 1;i<10;i++){
+        if(v[0]*v[i]<0){
+        t = v[0] + (rand()/(RAND_MAX + 1.0))*(v[i]-v[0]);
+        if(hardyz(t)<erro && hardyz(t)>-1*erro){
+            printf("Valor do input = 0.5 + %lfi",t);
+            printf("Valor do output = %lf ",creal(critzeta(t)));
+            printf("%lfi",cimag(critzeta(t)));
+            break;
+        }
+        }
+    }
     }else{
         printf("Invalido.");
         return 0;
