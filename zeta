@@ -5,7 +5,6 @@
 #include <complex.h>
 #include <time.h>
 
-
 double mod(double complex s){ // função básica para calcular módulo de números complexos. //
     return sqrt(creal(s)*creal(s) + cimag(s)*cimag(s));
 }
@@ -43,7 +42,11 @@ double zeta(double n){ // converge para t>1, forma base da Zeta de Riemann. //
     } 
     double complex critzeta(double t){ // função final, denominada Riemann-Siegel, essencial para calcular a zeta de Riemann com parte real fixa 1/2 //
         return hardyz(t)*cpow(exp(1),-1*I*theta(t));
-    }
+    } int cmp_double(const void *a, const void *b) { // função de comparação //
+    double da = *(const double *)a;
+    double db = *(const double *)b;
+    return (da > db) - (da < db);
+}
 
 
 int main(){
@@ -63,20 +66,43 @@ int main(){
     double t;
     double erro = 0.01;
     srand(time(NULL));
-    for(int i = 0;i<10;i++){  
-    t = 1000*(double)rand()/RAND_MAX;
-    v[i]=t;
-    }for(int i = 1;i<10;i++){
-        if(v[0]*v[i]<0){
-        t = v[0] + (rand()/(RAND_MAX + 1.0))*(v[i]-v[0]);
-        if(hardyz(t)<erro && hardyz(t)>-1*erro){
-            printf("Valor do input = 0.5 + %lfi",t);
-            printf("Valor do output = %lf ",creal(critzeta(t)));
-            printf("%lfi",cimag(critzeta(t)));
-            break;
+    int par = 0;
+    while(!par){
+        for(int i = 0;i<10;i++){
+            v[i] = 1000.0*(rand()/RAND_MAX);
         }
+    }qsort(v,10,sizeof(double),cmp_double);
+    double dif = 1e308;
+    int menor = -1;
+    for(int i = 0;i<9;i++){
+        double f = hardyz(v[i]);
+        double g = hardyz(v[i+1]);
+        if(f*g<0){
+            double diferenca = v[i+1]-v[i];
+            if(diferenca<dif){
+                dif = diferenca;
+                menor = i;
+            }
+        }
+    } if(menor!=-1){
+        par = 1;
+        
+        double a = v[menor];
+        double b = v[menor + 1];
+        while(1){
+            t = (a+b)/2.0;
+            double ft = hardyz(t);
+            if(fabs(ft)<erro){
+                break;
+            } if(hardyz(a)*ft<0){
+                b = t;
+            } else{
+                a = t;
+            }
         }
     }
+    
+   
     }else{
         printf("Invalido.");
         return 0;
