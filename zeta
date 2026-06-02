@@ -68,41 +68,39 @@ int main(){
     srand(time(NULL));
     int par = 0;
     while(!par){
-        for(int i = 0;i<10;i++){
-            v[i] = 1000.0*(rand()/RAND_MAX);
-        }
-    }qsort(v,10,sizeof(double),cmp_double);
+    for(int i = 0; i < 10; i++){
+    v[i] = 1000.0 * rand() / RAND_MAX;
+    }qsort(v, 10, sizeof(double), cmp_double);
     double dif = 1e308;
     int menor = -1;
-    for(int i = 0;i<9;i++){
-        double f = hardyz(v[i]);
-        double g = hardyz(v[i+1]);
-        if(f*g<0){
-            double diferenca = v[i+1]-v[i];
-            if(diferenca<dif){
-                dif = diferenca;
-                menor = i;
-            }
-        }
-    } if(menor!=-1){
-        par = 1;
-        
-        double a = v[menor];
-        double b = v[menor + 1];
-        while(1){
-            t = (a+b)/2.0;
-            double ft = hardyz(t);
-            if(fabs(ft)<erro){
-                break;
-            } if(hardyz(a)*ft<0){
-                b = t;
-            } else{
-                a = t;
-            }
-        }
+    for(int i = 0; i < 9; i++){
+    double f = hardyz(v[i]);
+    double g = hardyz(v[i+1]);
+    if(f * g < 0){
+    double diferenca = v[i+1] - v[i];
+    if(diferenca < dif){
+    dif = diferenca;
+    menor = i;
     }
-    
-   
+    }
+    }if(menor != -1){
+    par = 1;
+    double a = v[menor];
+    double b = v[menor + 1];
+    while(1){
+    t = (a + b) / 2.0;
+    double ft = hardyz(t);
+    if(fabs(ft) < erro){
+    break;
+    }if(hardyz(a) * ft < 0){
+    b = t;
+    } else{
+    a = t;
+    }
+    }printf("Valor do input  = 0.5 + %lfi\n",t);
+    printf("Valor do output = %lf + %lfi\n",creal(critzeta(t)), cimag(critzeta(t)));
+    }
+    }
     }else{
         printf("Invalido.");
         return 0;
