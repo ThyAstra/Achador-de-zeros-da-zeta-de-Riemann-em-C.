@@ -5,104 +5,110 @@
 #include <complex.h>
 #include <time.h>
 
-    double mod(double complex s){ // função básica para calcular módulo de números complexos. //
-    return sqrt(creal(s)*creal(s) + cimag(s)*cimag(s));
-    }
-    double zeta(double n){ // converge para t>1, forma base da Zeta de Riemann. //
-    double soma = 0;
-    for(int i=1;i<=100;i++){
-    soma = soma + 1/pow(i,n);
-    if(i==100){
-    return soma;
-    }
-    }
-    }
-    double complex czeta(double reals, double imags){ // converge para Re(s)>0, forma mais básica para computar a função continuada analíticamente, embora demore para convergir para partes reais pequenas, não sendo muito útil para achar zeros aleatoriamente. //
-    double complex s = reals + imags*I;
-    double complex soma = 0;
-    for(int i=1;i<=100000;i++){
-    soma = cpow(-1, i-1)/cpow(i, s);
-    if(i==100000){
-    return ((1/(1-cpow(2,1-s)))*soma);
-    }
-    }
-    }
-    double theta(double t){ // função utilizada para aproximar a função theta de t que aparece na fórmula de Riemann-Siegel. //
-    return 0.5*t*log(t/(2*M_PI)) - 0.5*t - M_PI/8 + 1.0/(48*t) + 7.0/(5760.0*t*t*t);
-    } 
-    double resto(double t){ // função utilizada para aproximar o resto da função Z de Hardy //
-    double tau = sqrt(t/(2*M_PI)) - floor(sqrt(t/(2*M_PI)));
-  
-    return pow(-1,floor(sqrt(t/(2*M_PI)) - 1))*pow(2*M_PI/t,0.25)*cos(2*M_PI*(tau*tau - tau - 0.0625))/cos(2*M_PI*tau);
-    } 
-    double hardyz(double t){ // função essencial para calcular zeros na linha crítica, utilizando a função theta de t. //
-    double soma = 0;
-    for(int i=1;i<=floor(sqrt(t/(2*M_PI)));i++){
-    soma = soma + cos(theta(t) - t*log(i))/sqrt(i);
-    } return 2*soma + resto(t);
-    } 
-    double complex critzeta(double t){ // função final, denominada Riemann-Siegel, essencial para calcular a zeta de Riemann com parte real fixa 1/2 //
-    return hardyz(t)*cpow(exp(1),-1*I*theta(t));
-    }int cmp_double(const void *a, const void *b) { // função de comparação //
-    double da = *(const double *)a;
-    double db = *(const double *)b;
-    return (da > db) - (da < db);
-    }
+double mod(double complex s) { // função básica para calcular módulo de números complexos. //
+	return sqrt(creal(s)*creal(s) + cimag(s)*cimag(s));
+}
+double zeta(double n) { // converge para t>1, forma base da Zeta de Riemann. //
+	double soma = 0;
+	for(int i=1; i<=100; i++) {
+		soma = soma + 1/pow(i,n);
+		if(i==100) {
+			return soma;
+		}
+	}
+}
+double complex czeta(double reals, double imags) { // converge para Re(s)>0, forma mais básica para computar a função continuada analíticamente, embora demore para convergir para partes reais pequenas, não sendo muito útil para achar zeros aleatoriamente. //
+	double complex s = reals + imags*I;
+	double complex soma = 0;
+	for(int i=1; i<=100000; i++) {
+		soma = cpow(-1, i-1)/cpow(i, s);
+		if(i==100000) {
+			return ((1/(1-cpow(2,1-s)))*soma);
+		}
+	}
+}
+double theta(double t) { // função utilizada para aproximar a função theta de t que aparece na fórmula de Riemann-Siegel. //
+	return 0.5*t*log(t/(2*M_PI)) - 0.5*t - M_PI/8 + 1.0/(48*t) + 7.0/(5760.0*t*t*t);
+}
+double resto(double t) { // função utilizada para aproximar o resto da função Z de Hardy //
+	double tau = sqrt(t/(2*M_PI)) - floor(sqrt(t/(2*M_PI)));
+
+	return pow(-1,floor(sqrt(t/(2*M_PI)) - 1))*pow(2*M_PI/t,0.25)*cos(2*M_PI*(tau*tau - tau - 0.0625))/cos(2*M_PI*tau);
+}
+double hardyz(double t) { // função essencial para calcular zeros na linha crítica, utilizando a função theta de t. //
+	double soma = 0;
+	for(int i=1; i<=floor(sqrt(t/(2*M_PI))); i++) {
+		soma = soma + cos(theta(t) - t*log(i))/sqrt(i);
+	}
+	return 2*soma + resto(t);
+}
+double complex critzeta(double t) { // função final, denominada Riemann-Siegel, essencial para calcular a zeta de Riemann com parte real fixa 1/2 //
+	return hardyz(t)*cpow(exp(1),-1*I*theta(t));
+}
+int cmp_double(const void *a, const void *b) { // função de comparação //
+	double da = *(const double *)a;
+	double db = *(const double *)b;
+	return (da > db) - (da < db);
+}
 
 
-int main(){
-    int a;
-    printf("Escolha qual comportamento da Zeta de Riemann voce quer testar(1 para zeta normal, 2 para zeta com parte real entre 0 e 1, e 3 para zeta com parte real 1/2):");
-    scanf("%d",&a);
-    if(a==1){
-    double n;
-    printf("Escolha o valor da potencia na soma:");
-    scanf("%lf",&n);
-    printf("Valor:%lf",zeta(n));
-    }else if(a==2){
-    }else if(a==3){
-    double v[10];    
-    double t;
-    double erro = 0.01;
-    srand(time(NULL));
-    int par = 0;
-    while(!par){
-    for(int i = 0; i < 10; i++){
-    v[i] = 1000.0 * rand() / RAND_MAX;
-    }qsort(v, 10, sizeof(double), cmp_double);
-    double dif = 1e308;
-    int menor = -1;
-    for(int i = 0; i < 9; i++){
-    double f = hardyz(v[i]);
-    double g = hardyz(v[i+1]);
-    if(f * g < 0){
-    double diferenca = v[i+1] - v[i];
-    if(diferenca < dif){
-    dif = diferenca;
-    menor = i;
-    }
-    }
-    }if(menor != -1){
-    par = 1;
-    double a = v[menor];
-    double b = v[menor + 1];
-    while(1){
-    t = (a + b) / 2.0;
-    double ft = hardyz(t);
-    if(fabs(ft) < erro){
-    break;
-    }if(hardyz(a) * ft < 0){
-    b = t;
-    } else{
-    a = t;
-    }
-    }printf("Valor do input  = 0.5 + %lfi\n",t);
-    printf("Valor do output = %lf + %lfi\n",creal(critzeta(t)), cimag(critzeta(t)));
-    }
-    }
-    }else{
-    printf("Invalido.");
-    return 0;
-    }
-    return 0;
+int main() {
+	int a;
+	printf("Escolha qual comportamento da Zeta de Riemann voce quer testar(1 para zeta normal, 2 para zeta com parte real entre 0 e 1, e 3 para zeta com parte real 1/2):");
+	scanf("%d",&a);
+	if(a==1) {
+		double n;
+		printf("Escolha o valor da potencia na soma:");
+		scanf("%lf",&n);
+		printf("Valor:%lf",zeta(n));
+	} else if(a==2) {
+	} else if(a==3) {
+		double v[10];
+		double t;
+		double erro = 0.01;
+		srand(time(NULL));
+		int par = 0;
+		while(!par) {
+			for(int i = 0; i < 10; i++) {
+				v[i] = 1000.0 * rand() / RAND_MAX;
+			}
+			qsort(v, 10, sizeof(double), cmp_double);
+			double dif = 1e308;
+			int menor = -1;
+			for(int i = 0; i < 9; i++) {
+				double f = hardyz(v[i]);
+				double g = hardyz(v[i+1]);
+				if(f * g < 0) {
+					double diferenca = v[i+1] - v[i];
+					if(diferenca < dif) {
+						dif = diferenca;
+						menor = i;
+					}
+				}
+			}
+			if(menor != -1) {
+				par = 1;
+				double a = v[menor];
+				double b = v[menor + 1];
+				while(1) {
+					t = (a + b) / 2.0;
+					double ft = hardyz(t);
+					if(fabs(ft) < erro) {
+						break;
+					}
+					if(hardyz(a) * ft < 0) {
+						b = t;
+					} else {
+						a = t;
+					}
+				}
+				printf("Valor do input  = 0.5 + %lfi\n",t);
+				printf("Valor do output = %lf + %lfi\n",creal(critzeta(t)), cimag(critzeta(t)));
+			}
+		}
+	} else {
+		printf("Invalido.");
+		return 0;
+	}
+	return 0;
 }
