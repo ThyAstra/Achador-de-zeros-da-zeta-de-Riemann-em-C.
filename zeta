@@ -28,35 +28,40 @@ double zeta(double n){ // converge para t>1, forma base da Zeta de Riemann. //
     }
 } double theta(double t){ // função utilizada para aproximar a função theta de t que aparece na fórmula de Riemann-Siegel. //
     return 0.5*t*log(t/2*M_PI) - 0.5*t - M_PI/8 + 1.0/(48*t) + 7.0/(5760.0*t*t*t);
-} double resto(t){ // função utilizada para aproximar o resto da função Z de Hardy //
+} 
+  double resto(double t){ // função utilizada para aproximar o resto da função Z de Hardy //
   double tau = sqrt(t/(2*M_PI)) - floor(sqrt(t/(2*M_PI)));
-  return pow(-1,floor(sqrt(t/(2*M_PI))))*pow(2*M_PI/t,1/4)*cos(2*M_PI*(tau*tau - tau - 1/16))/cos(2*M_PI*tau);
   
+  return pow(-1,floor(sqrt(t/(2*M_PI))))*pow(2*M_PI/t,1/4)*cos(2*M_PI*(tau*tau - tau - 1/16))/cos(2*M_PI*tau);
+} 
   double hardyz(double t){ // função essencial para calcular zeros na linha crítica, utilizando a função theta de t. //
     double soma = 0;
-    for(int i=1,i<floor(sqrt(t/(2*M_PI)))){
-        s = s + cos(theta(t) - t*log(i))/sqrt(i);
-        return 2*s + resto(t);
-    }} double complex critzeta(double t){ // função final, denominada Riemann-Siegel, essencial para calcular a zeta de Riemann com parte real fixa 1/2 //
-
+    for(int i=1;i<=floor(sqrt(t/(2*M_PI)));i++){
+        soma = soma + cos(theta(t) - t*log(i))/sqrt(i);
+        return 2*soma + resto(t);
+    }} 
+    double complex critzeta(double t){ // função final, denominada Riemann-Siegel, essencial para calcular a zeta de Riemann com parte real fixa 1/2 //
+        return hardyz(t)*cpow(exp(1),-1*I*theta(t));
+    }
 
 
 int main(){
-    int t;
+    int a;
     printf("Escolha qual comportamento da Zeta de Riemann voce quer testar(1 para zeta normal, 2 para zeta com parte real entre 0 e 1, e 3 para zeta com parte real 1/2):");
-    scanf("%d",&t);
-    if(t==1){
+    scanf("%d",&a);
+    if(a==1){
         double n;
         printf("Escolha o valor da potencia na soma:");
         scanf("%lf",&n);
         printf("Valor:%lf",zeta(n));
         
-    }else if(t==2){
+    }else if(a==2){
         
-    }
-        
-    }else if(t==3){
-        
+    }else if(a==3){
+    double t;
+    scanf("%lf",&t);
+    printf("%lf",creal(critzeta(t)));
+    printf("%lfi",cimag(critzeta(t)));
     }else{
         printf("Invalido.");
         return 0;
