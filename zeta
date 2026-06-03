@@ -20,13 +20,17 @@ double zeta(double n) { // converge para t>1, forma base da Zeta de Riemann. //
 double complex czeta(double reals, double imags) { // converge para Re(s)>0, forma mais básica para computar a função continuada analíticamente, embora demore para convergir para partes reais pequenas, não sendo muito útil para achar zeros aleatoriamente. //
 	double complex s = reals + imags*I;
 	double complex soma = 0;
-	for(int i=1; i<=100000; i++) {
-		soma = cpow(-1, i-1)/cpow(i, s);
-		if(i==100000) {
+	for(int i=1; i<=500000; i++) {
+		soma = soma + cpow(-1, i-1)/cpow(i, s);
+		if(i==500000) {
 			return ((1/(1-cpow(2,1-s)))*soma);
 		}
 	}
 }
+double complex derivada(double reals,double imags) {
+	return (czeta(reals + 0.000000001, imags + 0.000000001) - czeta(reals, imags))/(0.000000001 + 0.000000001*I);
+}
+
 double theta(double t) { // função utilizada para aproximar a função theta de t que aparece na fórmula de Riemann-Siegel. //
 	return 0.5*t*log(t/(2*M_PI)) - 0.5*t - M_PI/8 + 1.0/(48*t) + 7.0/(5760.0*t*t*t);
 }
