@@ -24,11 +24,6 @@ double complex czeta(double reals, double imags) { // converge para Re(s)>0, for
 		}
 	}
 }
-double complex derivada(double reals,double imags) {
-	double r=1e-6;
-	return (czeta(reals + r, imags) - czeta(reals, imags))/r;
-}
-
 double theta(double t) { // função utilizada para aproximar a função theta de t que aparece na fórmula de Riemann-Siegel. //
 	return 0.5*t*log(t/(2*M_PI)) - 0.5*t - M_PI/8 + 1.0/(48*t) + 7.0/(5760.0*t*t*t);
 }
@@ -52,10 +47,39 @@ int cmp_double(const void *a, const void *b) { // função de comparação //
 	double db = *(const double *)b;
 	return (da > db) - (da < db);
 }
-double complex newtonzeta(double t, double s) {
-	return t + s*I - czeta(t,s)/derivada(t,s);
-}
+double complex etaeuler(double reals,double imags) {
+	double complex s = reals + imags*I;
+	double complex dif[150] = {0};
+	double complex soma = 0;
+	double complex fator = 1.0;
 
+	                       dif[0] = 1.0;
+	soma = soma + fator * dif[0] / 2.0;
+
+	for (int n = 1; n < 150; n++) {
+		double complex an = 1.0 / cpow(n + 1, s);
+		double complex ant = an;
+		for (int k = 0; k <= n; k++) {
+			double complex temp = dif[k];
+			dif[k] = ant;
+			ant = temp - ant;
+		}
+		fator = -fator;
+		        soma = soma + fator * dif[n] / cpow(2.0, n+1);
+	}
+	return soma;
+}
+double complex zetaacel(double reals, double imags) {
+	double complex s = reals + imags*I;
+	return etaeuler(reals,imags) * 1.0/(1.0-cpow(2.0,1.0-s));
+}
+double complex derivada(double reals,double imags) {
+	double r=1e-6;
+	return (zetaacel(reals + r, imags) - zetaacel(reals, imags))/r;
+}
+double complex newtonzeta(double t, double s) {
+	return t + s*I - zetaacel(t,s)/derivada(t,s);
+}
 
 int main() {
 	int a;
@@ -70,13 +94,12 @@ int main() {
 	} else if(a==2) {
 		srand(time(NULL));
 		double t,s;
-		int max=1000;
 		t = 0.2 + 0.6*rand()/RAND_MAX;
 		s = rand()/RAND_MAX * 100;
-		while(max>0) {
+		while(1){
 			double complex v = newtonzeta(t,s);
-			t = creal(v);
-			s = cimag(v);
+			t = t + 0.5 * (creal(v) - t);
+			s = s + 0.5 * (cimag(v) - s);
 			if(t<0.0) {
 				t=0.05;
 			} else if(t>1.0) {
@@ -85,15 +108,13 @@ int main() {
 			if(fabs(s)>1000.0) {
 				t = 0.2 + 0.6*rand()/RAND_MAX;
 				s = rand()/RAND_MAX * 100;
-				max=1000;
 				continue;
 			}
-			if(cabs(czeta(t,s))<erro) {
+			if(cabs(zetaacel(t,s))<erro) {
 				printf("Zero Encontrado : %lf + %lfi",t,s);
-				printf("Valor da função: %lf + %lfi",creal(czeta(t,s)),cimag(czeta(t,s)));
+				printf("Valor da função: %lf + %lfi",creal(zetaacel(t,s)),cimag(zetaacel(t,s)));
 				return 0;
 			}
-			max--;
 		}
 		printf("Muito tempo passou.");
 	} else if(a==3) {
