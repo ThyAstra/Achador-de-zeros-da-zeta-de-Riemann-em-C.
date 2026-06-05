@@ -5,9 +5,6 @@
 #include <complex.h>
 #include <time.h>
 
-double mod(double complex s) { // função básica para calcular módulo de números complexos. //
-	return sqrt(creal(s)*creal(s) + cimag(s)*cimag(s));
-}
 double zeta(double n) { // converge para t>1, forma base da Zeta de Riemann. //
 	double soma = 0;
 	for(int i=1; i<=100; i++) {
@@ -61,6 +58,7 @@ double complex newtonzeta(double t, double s) {
 
 int main() {
 	int a;
+	double erro = 0.01;
 	printf("Escolha qual comportamento da Zeta de Riemann voce quer testar(1 para zeta normal, 2 para zeta com parte real entre 0 e 1, e 3 para zeta com parte real 1/2):");
 	scanf("%d",&a);
 	if(a==1) {
@@ -69,10 +67,31 @@ int main() {
 		scanf("%lf",&n);
 		printf("Valor:%lf",zeta(n));
 	} else if(a==2) {
+		srand(time(NULL));
+		int b;
+		double t,s;
+		t = rand()/RAND_MAX;
+		s = rand()/RAND_MAX * 100;
+		for(int i=0; i<=1000; i++) {
+			b=i;
+		}
+		while(1) {
+			newtonzeta(t,s);
+			t = creal(newtonzeta(t,s));
+			s = cimag(newtonzeta(t,s))*I;
+			if(cabs(czeta(t,s))<erro) {
+				break;
+			}
+			if(b==1000) {
+				printf("Muito tempo se passou.");
+				return 0;
+			}
+		}
+		printf("Zero Encontrado : %lf + %lfi",t,s);
+		printf("Valor da função: %lf + %lfi",creal(czeta(t,s)),cimag(czeta(t,s)));
 	} else if(a==3) {
 		double v[10];
 		double t;
-		double erro = 0.01;
 		srand(time(NULL));
 		int par = 0;
 		while(!par) {
