@@ -53,7 +53,7 @@ double complex etaeuler(double reals,double imags) {
 	double complex soma = 0;
 	double complex fator = 1.0;
 
-	                       dif[0] = 1.0;
+	dif[0] = 1.0;
 	soma = soma + fator * dif[0] / 2.0;
 
 	for (int n = 1; n < 150; n++) {
@@ -65,7 +65,7 @@ double complex etaeuler(double reals,double imags) {
 			ant = temp - ant;
 		}
 		fator = -fator;
-		        soma = soma + fator * dif[n] / cpow(2.0, n+1);
+		soma = soma + fator * dif[n] / cpow(2.0, n+1);
 	}
 	return soma;
 }
@@ -96,7 +96,7 @@ int main() {
 		double t,s;
 		t = 0.2 + 0.6*rand()/RAND_MAX;
 		s = rand()/RAND_MAX * 100;
-		while(1){
+		for(int i = 1; i<=100; i++) {
 			double complex v = newtonzeta(t,s);
 			t = t + 0.5 * (creal(v) - t);
 			s = s + 0.5 * (cimag(v) - s);
