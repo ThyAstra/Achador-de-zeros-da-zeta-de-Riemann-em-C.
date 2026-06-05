@@ -54,6 +54,9 @@ int cmp_double(const void *a, const void *b) { // função de comparação //
 	double db = *(const double *)b;
 	return (da > db) - (da < db);
 }
+double complex newtonzeta(double t, double s) {
+	return t + s*I - czeta(t,s)/derivada(t,s);
+}
 
 
 int main() {
