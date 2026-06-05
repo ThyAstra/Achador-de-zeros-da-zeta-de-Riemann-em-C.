@@ -17,15 +17,16 @@ double zeta(double n) { // converge para t>1, forma base da Zeta de Riemann. //
 double complex czeta(double reals, double imags) { // converge para Re(s)>0, forma mais básica para computar a função continuada analíticamente, embora demore para convergir para partes reais pequenas, não sendo muito útil para achar zeros aleatoriamente. //
 	double complex s = reals + imags*I;
 	double complex soma = 0;
-	for(int i=1; i<=500000; i++) {
+	for(int i=1; i<=200000; i++) {
 		soma = soma + cpow(-1, i-1)/cpow(i, s);
-		if(i==500000) {
+		if(i==200000) {
 			return ((1/(1-cpow(2,1-s)))*soma);
 		}
 	}
 }
 double complex derivada(double reals,double imags) {
-	return (czeta(reals + 0.000000001, imags + 0.000000001) - czeta(reals, imags))/(0.000000001 + 0.000000001*I);
+	double r=1e-6;
+	return (czeta(reals + r, imags) - czeta(reals, imags))/r;
 }
 
 double theta(double t) { // função utilizada para aproximar a função theta de t que aparece na fórmula de Riemann-Siegel. //
@@ -70,12 +71,23 @@ int main() {
 		srand(time(NULL));
 		double t,s;
 		int max=1000;
-		t = rand()/RAND_MAX;
+		t = 0.2 + 0.6*rand()/RAND_MAX;
 		s = rand()/RAND_MAX * 100;
 		while(max>0) {
-			newtonzeta(t,s);
-			t = creal(newtonzeta(t,s));
-			s = cimag(newtonzeta(t,s));
+			double complex v = newtonzeta(t,s);
+			t = creal(v);
+			s = cimag(v);
+			if(t<0.0) {
+				t=0.05;
+			} else if(t>1.0) {
+				t=0.95;
+			}
+			if(fabs(s)>1000.0) {
+				t = 0.2 + 0.6*rand()/RAND_MAX;
+				s = rand()/RAND_MAX * 100;
+				max=1000;
+				continue;
+			}
 			if(cabs(czeta(t,s))<erro) {
 				printf("Zero Encontrado : %lf + %lfi",t,s);
 				printf("Valor da função: %lf + %lfi",creal(czeta(t,s)),cimag(czeta(t,s)));
