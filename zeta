@@ -68,27 +68,22 @@ int main() {
 		printf("Valor:%lf",zeta(n));
 	} else if(a==2) {
 		srand(time(NULL));
-		int b;
 		double t,s;
+		int max=1000;
 		t = rand()/RAND_MAX;
 		s = rand()/RAND_MAX * 100;
-		for(int i=0; i<=1000; i++) {
-			b=i;
-		}
-		while(1) {
+		while(max>0) {
 			newtonzeta(t,s);
 			t = creal(newtonzeta(t,s));
-			s = cimag(newtonzeta(t,s))*I;
+			s = cimag(newtonzeta(t,s));
 			if(cabs(czeta(t,s))<erro) {
-				break;
-			}
-			if(b==1000) {
-				printf("Muito tempo se passou.");
+				printf("Zero Encontrado : %lf + %lfi",t,s);
+				printf("Valor da função: %lf + %lfi",creal(czeta(t,s)),cimag(czeta(t,s)));
 				return 0;
 			}
+			max--;
 		}
-		printf("Zero Encontrado : %lf + %lfi",t,s);
-		printf("Valor da função: %lf + %lfi",creal(czeta(t,s)),cimag(czeta(t,s)));
+		printf("Muito tempo passou.");
 	} else if(a==3) {
 		double v[10];
 		double t;
