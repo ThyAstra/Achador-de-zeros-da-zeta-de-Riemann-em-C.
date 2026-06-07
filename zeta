@@ -7,18 +7,16 @@
 
 double zeta(double n) { // converge para t>1, forma base da Zeta de Riemann. //
 	double soma = 0;
-	for(int i=1; i<=100; i++) {
+	for(int i=1;i<=100;i++) {
 		soma = soma + 1/pow(i,n);
-		if(i==100) {
-			return soma;
-		}
 	}
+	return soma;
 }
 double complex czeta(double reals, double imags) { // converge para Re(s)>0, forma mais básica para computar a função continuada analíticamente, embora demore para convergir para partes reais pequenas, não sendo muito útil para achar zeros aleatoriamente. //
 	double complex s = reals + imags*I;
 	double complex soma = 0;
-	for(int i=1; i<=200000; i++) {
-		soma = soma + cpow(-1, i-1)/cpow(i, s);
+	for(int i=1;i<=200000;i++) {
+		soma = soma + cpow(-1,i-1)/cpow(i,s);
 		if(i==200000) {
 			return ((1/(1-cpow(2,1-s)))*soma);
 		}
@@ -34,18 +32,18 @@ double resto(double t) { // função utilizada para aproximar o resto da funçã
 }
 double hardyz(double t) { // função essencial para calcular zeros na linha crítica, utilizando a função theta de t. //
 	double soma = 0;
-	for(int i=1; i<=floor(sqrt(t/(2*M_PI))); i++) {
+	for(int i=1;i<=floor(sqrt(t/(2*M_PI)));i++) {
 		soma = soma + cos(theta(t) - t*log(i))/sqrt(i);
 	}
 	return 2*soma + resto(t);
 }
 double complex critzeta(double t) { // função final, denominada Riemann-Siegel, essencial para calcular a zeta de Riemann com parte real fixa 1/2 .//
-	return hardyz(t)*cpow(exp(1),-1*I*theta(t));
+	return hardyz(t)*cexp(-I*theta(t));
 }
-int cmp_double(const void *a, const void *b) { // função de comparação. //
+int cmp_double(const void *a, const void *b) { // função de comparação para método da bissecção. //
 	double da = *(const double *)a;
 	double db = *(const double *)b;
-	return (da > db) - (da < db);
+	return (da>db) - (da<db);
 }
 double complex etaeuler(double reals,double imags) { // aceleração da função eta, para que haja uma convergência muito mais rápida. //
 	double complex s = reals + imags*I;
@@ -54,24 +52,24 @@ double complex etaeuler(double reals,double imags) { // aceleração da função
 	double complex fator = 1.0;
 
 	dif[0] = 1.0;
-	soma = soma + fator * dif[0] / 2.0;
+	soma = soma + fator*dif[0]/2.0;
 
-	for (int n = 1; n < 150; n++) {
-		double complex an = 1.0 / cpow(n + 1, s);
+	for (int n=1;n<150;n++) {
+		double complex an = 1.0/cpow(n + 1,s);
 		double complex ant = an;
-		for (int k = 0; k <= n; k++) {
+		for (int k=0;k<=n;k++) {
 			double complex temp = dif[k];
 			dif[k] = ant;
 			ant = temp - ant;
 		}
 		fator = -fator;
-		soma = soma + fator * dif[n] / cpow(2.0, n+1);
+		soma = soma + fator*dif[n]/cpow(2.0,n+1);
 	}
 	return soma;
 }
 double complex zetaacel(double reals, double imags) { // função zeta acelerada, que utiliza a função eta acelerada. //
 	double complex s = reals + imags*I;
-	return etaeuler(reals,imags) * 1.0/(1.0-cpow(2.0,1.0-s));
+	return etaeuler(reals,imags)*1.0/(1.0-cpow(2.0,1.0-s));
 }
 double complex derivada(double reals,double imags) { // aproximação numérica da derivada da zeta acelerada, que leva em consideração apenas uma pequena mudança na parte real, pois é analítica. //
 	double r=1e-6;
@@ -83,7 +81,6 @@ double complex newtonzeta(double t, double s) { // função utilizada para reali
 
 int main() {
 	int a;
-	double erro = 0.01;
 	printf("Escolha qual comportamento da Zeta de Riemann voce quer testar(1 para zeta normal, 2 para zeta com parte real entre 0 e 1, e 3 para zeta com parte real 1/2):");
 	scanf("%d",&a);
 	if(a==1) { // essa parte apenas dá o resultado da função zeta normal, que converge para números reais maiores que 1. //
@@ -94,26 +91,29 @@ int main() {
 	} else if(a==2) { // essa parte utiliza o método de Newton e um chute inicial aleatório no retângulo infinito com base real entre 0 e 1, para tentar encontrar zeros.//
 		srand(time(NULL));
 		double t,s;
+		double erro = 0.01;
 		t = 0.2 + 0.6*rand()/RAND_MAX;
 		s = rand()/RAND_MAX * 100;
-		for(int i = 1; i<=100; i++) {
-			double complex v = newtonzeta(t,s);
-			t = t + 0.5 * (creal(v) - t);
-			s = s + 0.5 * (cimag(v) - s);
-			if(t<0.0) {
-				t=0.05;
-			} else if(t>1.0) {
-				t=0.95;
-			}
-			if(fabs(s)>1000.0) {
-				t = 0.2 + 0.6*rand()/RAND_MAX;
-				s = rand()/RAND_MAX * 100;
-				continue;
-			}
-			if(cabs(zetaacel(t,s))<erro) {
-				printf("Zero Encontrado : %lf + %lfi",t,s);
-				printf("Valor da função: %lf + %lfi",creal(zetaacel(t,s)),cimag(zetaacel(t,s)));
-				return 0;
+		for(int n=1;n<=1000;n++) {
+			for(int i=1;i<=100;i++) {
+				double complex v = newtonzeta(t,s);
+				t = t + 0.5*(creal(v) - t);
+				s = s + 0.5*(cimag(v) - s);
+				if(t<0.0) {
+					t=0.05;
+				} else if(t>1.0) {
+					t=0.95;
+				}
+				if(fabs(s)>1000.0) {
+					t = 0.2 + 0.6*rand()/RAND_MAX;
+					s = rand()/RAND_MAX*100;
+					continue;
+				}
+				if(cabs(zetaacel(t,s))<erro) {
+					printf("Zero Encontrado : %lf + %lfi",t,s);
+					printf("Valor da função: %lf + %lfi",creal(zetaacel(t,s)),cimag(zetaacel(t,s)));
+					return 0;
+				}
 			}
 		}
 		printf("Muito tempo passou.");
@@ -121,38 +121,39 @@ int main() {
 		double v[10];
 		double t;
 		srand(time(NULL));
+		double erro = 0.0000001;
 
-		for(int n=0; n<1000; n++) {
+		for(int n=0;n<1000;n++) {
 			int par = 0;
 			while(!par) {
-				for(int i = 0; i < 10; i++) {
-					v[i] = 100000.0 * rand() / RAND_MAX;
+				for(int i=0;i<10;i++) {
+					v[i] = 100000.0*rand()/RAND_MAX;
 				}
-				qsort(v, 10, sizeof(double), cmp_double);
+				qsort(v,10,sizeof(double),cmp_double);
 				double dif = 1e308;
 				int menor = -1;
-				for(int i = 0; i < 9; i++) {
+				for(int i=0;i<9;i++) {
 					double f = hardyz(v[i]);
 					double g = hardyz(v[i+1]);
-					if(f * g < 0) {
+					if(f*g<0) {
 						double diferenca = v[i+1] - v[i];
-						if(diferenca < dif) {
+						if(diferenca<dif) {
 							dif = diferenca;
 							menor = i;
 						}
 					}
 				}
-				if(menor != -1) {
+				if(menor!=-1) {
 					par = 1;
 					double a = v[menor];
 					double b = v[menor + 1];
 					while(1) {
-						t = (a + b) / 2.0;
+						t = (a + b)/2.0;
 						double ft = hardyz(t);
-						if(fabs(ft) < erro) {
+						if(fabs(ft)<erro) {
 							break;
 						}
-						if(hardyz(a) * ft < 0) {
+						if(hardyz(a)*ft<0) {
 							b = t;
 						} else {
 							a = t;
