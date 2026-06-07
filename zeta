@@ -27,7 +27,7 @@ double complex czeta(double reals, double imags) { // converge para Re(s)>0, for
 double theta(double t) { // função utilizada para aproximar a função theta de t que aparece na fórmula de Riemann-Siegel. //
 	return 0.5*t*log(t/(2*M_PI)) - 0.5*t - M_PI/8 + 1.0/(48*t) + 7.0/(5760.0*t*t*t);
 }
-double resto(double t) { // função utilizada para aproximar o resto da função Z de Hardy //
+double resto(double t) { // função utilizada para aproximar o resto da função Z de Hardy. //
 	double tau = sqrt(t/(2*M_PI)) - floor(sqrt(t/(2*M_PI)));
 
 	return pow(-1,floor(sqrt(t/(2*M_PI)) - 1))*pow(2*M_PI/t,0.25)*cos(2*M_PI*(tau*tau - tau - 0.0625))/cos(2*M_PI*tau);
@@ -39,15 +39,15 @@ double hardyz(double t) { // função essencial para calcular zeros na linha cr�
 	}
 	return 2*soma + resto(t);
 }
-double complex critzeta(double t) { // função final, denominada Riemann-Siegel, essencial para calcular a zeta de Riemann com parte real fixa 1/2 //
+double complex critzeta(double t) { // função final, denominada Riemann-Siegel, essencial para calcular a zeta de Riemann com parte real fixa 1/2 .//
 	return hardyz(t)*cpow(exp(1),-1*I*theta(t));
 }
-int cmp_double(const void *a, const void *b) { // função de comparação //
+int cmp_double(const void *a, const void *b) { // função de comparação. //
 	double da = *(const double *)a;
 	double db = *(const double *)b;
 	return (da > db) - (da < db);
 }
-double complex etaeuler(double reals,double imags) {
+double complex etaeuler(double reals,double imags) { // aceleração da função eta, para que haja uma convergência muito mais rápida. //
 	double complex s = reals + imags*I;
 	double complex dif[150] = {0};
 	double complex soma = 0;
@@ -69,15 +69,15 @@ double complex etaeuler(double reals,double imags) {
 	}
 	return soma;
 }
-double complex zetaacel(double reals, double imags) {
+double complex zetaacel(double reals, double imags) { // função zeta acelerada, que utiliza a função eta acelerada. //
 	double complex s = reals + imags*I;
 	return etaeuler(reals,imags) * 1.0/(1.0-cpow(2.0,1.0-s));
 }
-double complex derivada(double reals,double imags) {
+double complex derivada(double reals,double imags) { // aproximação numérica da derivada da zeta acelerada, que leva em consideração apenas uma pequena mudança na parte real, pois é analítica. //
 	double r=1e-6;
 	return (zetaacel(reals + r, imags) - zetaacel(reals, imags))/r;
 }
-double complex newtonzeta(double t, double s) {
+double complex newtonzeta(double t, double s) { // função utilizada para realizar iterações do método de Newton, que converge para zeros próximos do número inicial, se o chute for bom. //
 	return t + s*I - zetaacel(t,s)/derivada(t,s);
 }
 
@@ -86,12 +86,12 @@ int main() {
 	double erro = 0.01;
 	printf("Escolha qual comportamento da Zeta de Riemann voce quer testar(1 para zeta normal, 2 para zeta com parte real entre 0 e 1, e 3 para zeta com parte real 1/2):");
 	scanf("%d",&a);
-	if(a==1) {
+	if(a==1) { // essa parte apenas dá o resultado da função zeta normal, que converge para números reais maiores que 1. //
 		double n;
 		printf("Escolha o valor da potencia na soma:");
 		scanf("%lf",&n);
 		printf("Valor:%lf",zeta(n));
-	} else if(a==2) {
+	} else if(a==2) { // essa parte utiliza o método de Newton e um chute inicial aleatório no retângulo infinito com base real entre 0 e 1, para tentar encontrar zeros.//
 		srand(time(NULL));
 		double t,s;
 		t = 0.2 + 0.6*rand()/RAND_MAX;
@@ -117,51 +117,52 @@ int main() {
 			}
 		}
 		printf("Muito tempo passou.");
-	} else if(a==3) {
+	} else if(a==3) { // essa parte utiliza o método de Riemann-Siegel para calcular a função na linha crítica de parte real 1/2, achando zeros extremamente rápido. //
 		double v[10];
 		double t;
 		srand(time(NULL));
-		
-		for(int n=0;n<1000;n++){
-		    int par = 0;
-		while(!par) {
-			for(int i = 0; i < 10; i++) {
-				v[i] = 100000.0 * rand() / RAND_MAX;
-			}
-			qsort(v, 10, sizeof(double), cmp_double);
-			double dif = 1e308;
-			int menor = -1;
-			for(int i = 0; i < 9; i++) {
-				double f = hardyz(v[i]);
-				double g = hardyz(v[i+1]);
-				if(f * g < 0) {
-					double diferenca = v[i+1] - v[i];
-					if(diferenca < dif) {
-						dif = diferenca;
-						menor = i;
+
+		for(int n=0; n<1000; n++) {
+			int par = 0;
+			while(!par) {
+				for(int i = 0; i < 10; i++) {
+					v[i] = 100000.0 * rand() / RAND_MAX;
+				}
+				qsort(v, 10, sizeof(double), cmp_double);
+				double dif = 1e308;
+				int menor = -1;
+				for(int i = 0; i < 9; i++) {
+					double f = hardyz(v[i]);
+					double g = hardyz(v[i+1]);
+					if(f * g < 0) {
+						double diferenca = v[i+1] - v[i];
+						if(diferenca < dif) {
+							dif = diferenca;
+							menor = i;
+						}
 					}
 				}
-			}
-			if(menor != -1) {
-				par = 1;
-				double a = v[menor];
-				double b = v[menor + 1];
-				while(1) {
-					t = (a + b) / 2.0;
-					double ft = hardyz(t);
-					if(fabs(ft) < erro) {
-						break;
+				if(menor != -1) {
+					par = 1;
+					double a = v[menor];
+					double b = v[menor + 1];
+					while(1) {
+						t = (a + b) / 2.0;
+						double ft = hardyz(t);
+						if(fabs(ft) < erro) {
+							break;
+						}
+						if(hardyz(a) * ft < 0) {
+							b = t;
+						} else {
+							a = t;
+						}
 					}
-					if(hardyz(a) * ft < 0) {
-						b = t;
-					} else {
-						a = t;
-					}
+					printf("Valor do input  = 0.5 + %lfi\n",t);
+					printf("Valor do output = %lf + %lfi\n",creal(critzeta(t)), cimag(critzeta(t)));
 				}
-				printf("Valor do input  = 0.5 + %lfi\n",t);
-				printf("Valor do output = %lf + %lfi\n",creal(critzeta(t)), cimag(critzeta(t)));
 			}
-		}}
+		}
 	} else {
 		printf("Invalido.");
 		return 0;
