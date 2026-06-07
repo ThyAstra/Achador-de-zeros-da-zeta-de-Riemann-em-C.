@@ -17,10 +17,8 @@ double complex czeta(double reals, double imags) { // converge para Re(s)>0, for
 	double complex soma = 0;
 	for(int i=1;i<=200000;i++) {
 		soma = soma + cpow(-1,i-1)/cpow(i,s);
-		if(i==200000) {
-			return ((1/(1-cpow(2,1-s)))*soma);
-		}
 	}
+	return ((1/(1-cpow(2,1-s)))*soma);
 }
 double theta(double t) { // função utilizada para aproximar a função theta de t que aparece na fórmula de Riemann-Siegel. //
 	return 0.5*t*log(t/(2*M_PI)) - 0.5*t - M_PI/8 + 1.0/(48*t) + 7.0/(5760.0*t*t*t);
@@ -110,8 +108,8 @@ int main() {
 					continue;
 				}
 				if(cabs(zetaacel(t,s))<erro) {
-					printf("Zero Encontrado : %lf + %lfi",t,s);
-					printf("Valor da função: %lf + %lfi",creal(zetaacel(t,s)),cimag(zetaacel(t,s)));
+					printf("Zero Encontrado : %lf + %lfi\n",t,s);
+					printf("Valor da função: %lf + %lfi\n",creal(zetaacel(t,s)),cimag(zetaacel(t,s)));
 					return 0;
 				}
 			}
